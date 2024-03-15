@@ -89,6 +89,6 @@ public abstract class Program
             ? $"{valueArray[0].PadLeft(left, '0')}{"".PadLeft(right, '0')}"
             : valueArray[1].Length > 2
                 ? $"{valueArray[0].PadLeft(left, '0')}{valueArray[1][..2]}"
-                : $"{valueArray[0].PadLeft(left, '0')}{valueArray[1].PadRight(right, '0')}";
+                : $"{valueArray[0].PadLeft(left, '0')}{valueArray[1].PadRight(right, '0')}"; 
     }
 }
