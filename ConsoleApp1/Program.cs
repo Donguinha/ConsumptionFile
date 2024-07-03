@@ -92,3 +92,109 @@ public abstract class Program
                 : $"{valueArray[0].PadLeft(left, '0')}{valueArray[1].PadRight(right, '0')}"; 
     }
 }
+
+
+//IMPLEMENTAÇÃO FEITA EM PRODUÇÃO
+
+//public async Task<ValueResult<(byte[] Bytes, List<string> Errors)>> CreateTextFileAsync(Stream userFile, Stream installmentFile, CancellationToken ct)
+//        {
+//            var msWriter = new MemoryStream();
+//            await using var writer = new StreamWriter(msWriter);
+//
+//            var userFileBytes = userFile.ToByteArray();
+//
+//            var count = 0;
+//            var documentsWithError = new List<string>(11);
+//
+//            await writer.WriteLineAsync($"0{DateTime.Now:yyyyMM}{_cnpj}CONSIGSIAPE".PadRight(553));
+//
+//            using var readerInstallment = new StreamReader(installmentFile);
+//
+//            while (!readerInstallment.EndOfStream)
+//            {
+//                if (await readerInstallment.ReadLineAsync()
+//                        is var lineInstallmentResult && string.IsNullOrWhiteSpace(lineInstallmentResult))
+//                    return ValueResult<(byte[], List<string>)>.Failure("Empty line");
+//
+//                var fieldsInstallmentFile = lineInstallmentResult.Split(';');
+//
+//                bool documentFound = default;
+//
+//                var originalUserStream = new MemoryStream(userFileBytes);
+//                using var disposableUserStream = new MemoryStream();
+//
+//                await originalUserStream.CopyToAsync(disposableUserStream, ct);
+//                disposableUserStream.Seek(0, SeekOrigin.Begin);
+//
+//                using var readerUserData = new StreamReader(disposableUserStream);
+//
+//                while (!readerUserData.EndOfStream)
+//                {
+//                    if (await readerUserData.ReadLineAsync()
+//                            is var lineUserResult && string.IsNullOrWhiteSpace(lineUserResult))
+//                        return ValueResult<(byte[], List<string>)>.Failure("Empty line");
+//
+//                    var fieldsUserData = lineUserResult.Split(';');
+//
+//                    if (string.IsNullOrWhiteSpace(fieldsInstallmentFile[12]))
+//                        break;
+//
+//                    if (UtilsExtensions.FormatDocument(fieldsInstallmentFile[12]).Equals(fieldsUserData[7]))
+//                    {
+//                        documentFound = true;
+//
+//                        var stringBuilder = new StringBuilder()
+//                            .Append('1')
+//                            .Append(fieldsUserData[1]);
+//
+//                        if (fieldsUserData[8] == "PENS")
+//                        {
+//                            stringBuilder
+//                                .Append(fieldsUserData[15].PadLeft(7, '0'))
+//                                .Append(fieldsUserData[6].PadLeft(8, '0'));
+//                        }
+//                        else
+//                        {
+//                            stringBuilder
+//                                .Append(fieldsUserData[6].PadLeft(7, '0'))
+//                                .Append("00000000");
+//                        }
+//
+//                        stringBuilder
+//                            .Append('4')
+//                            .Append(fieldsInstallmentFile[9].PadLeft(20, '0'))
+//                            .Append("35016")
+//                            .Append(fieldsInstallmentFile[36])
+//                            .Append(FormatValue(fieldsInstallmentFile[20], 9, 2))
+//                            .Append(fieldsInstallmentFile[21].PadLeft(3, '0'))
+//                            .Append(FormatValue(fieldsInstallmentFile[16], 9, 2))
+//                            .Append(FormatValue(fieldsInstallmentFile[19], 9, 2))
+//                            .Append(FormatValue(fieldsInstallmentFile[15], 5, 2))
+//                            .Append(FormatValue(fieldsInstallmentFile[22], 5, 2))
+//                            .Append(FormatValue(fieldsInstallmentFile[24], 5, 2))
+//                            .Append("".PadLeft(8, '0') + "".PadLeft(180, ' ') + "".PadLeft(42, '0') + "".PadLeft(181, ' '));
+//
+//                        if (stringBuilder.Length == 516)
+//                        {
+//                            await writer.WriteLineAsync(stringBuilder, ct);
+//
+//                            count++;
+//                        }
+//                        else
+//                            documentsWithError.Add(UtilsExtensions.FormatDocument(fieldsInstallmentFile[12]));
+//
+//                        break;
+//                    }
+//                }
+//
+//                if (!documentFound && !string.IsNullOrWhiteSpace(fieldsInstallmentFile[12]))
+//                    documentsWithError.Add(UtilsExtensions.FormatDocument(fieldsInstallmentFile[12]));
+//            }
+//
+//            await writer.WriteLineAsync($"9{count:D7}".PadRight(553));
+//
+//            await writer.FlushAsync();
+//            msWriter.Seek(0, SeekOrigin.Begin);
+//
+//            return ValueResult<(byte[], List<string>)>.Success((msWriter.ToByteArray(), documentsWithError));
+//        }
